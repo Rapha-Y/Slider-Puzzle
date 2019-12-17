@@ -124,6 +124,15 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
   }
 }
 
+int reset_game(char confirmation){
+  if(confirmation=='R' || confirmation=='r'){
+    return 1;
+  }else{
+    printf("Press R and Enter to restart the game.\n");
+    return 0;
+  }
+}
+
 /* Player interface functions */
 
 //checks if game is over
@@ -137,7 +146,7 @@ int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
     }
   }
   if(win==1){
-    printf("Congratulations! You won!");
+    printf("Congratulations! You won!\n");
     return 1;
   }else{
     return 0;
@@ -165,20 +174,27 @@ int main(){
   number_array array;
   zero_pos position;
   int swap_check, grid[GRID_SIZE][GRID_SIZE];
-  char input;
+  char input, reset;
 
   display_instructions();
-  reset_array(&array);
-  scramble_array(&array);
-  start_grid(array, grid);
-  find_zero(&position, grid);
+  while(1){
+    reset_array(&array);
+    scramble_array(&array);
+    start_grid(array, grid);
+    find_zero(&position, grid);
 
-  while(check_victory(grid)!=1){
-    show_grid(grid);
-    swap_check=0;
-    while(swap_check==0){
-      scanf("\n%c", &input);
-      swap_check = move_zero(&position, grid, input);
+    while(check_victory(grid)!=1){
+      show_grid(grid);
+      swap_check=0;
+      while(swap_check==0){
+        scanf("\n%c", &input);
+        swap_check = move_zero(&position, grid, input);
+      }
+    }
+
+    reset = 'F';
+    while(reset_game(reset)!=1){
+      scanf("\n%c", &reset);
     }
   }
 
