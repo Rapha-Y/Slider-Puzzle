@@ -72,10 +72,10 @@ void find_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE]){
 
 int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
   //for invalid letters
-  if(input!='W' && input!='A' && input!='S' && input!='D'){
+  if(input!='W' && input!='A' && input!='S' && input!='D' && input!='w' && input!='a' && input!='s' && input!='d'){
     printf("Please enter a valid input.\n");
     return 0;
-  }else if(input=='W'){
+  }else if(input=='W' || input=='w'){
     //for border movements
     if(position->row_index==0){
       printf("Please enter a valid movement.\n");
@@ -88,7 +88,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
       position->row_index--;
       return 1;
     }
-  }else if(input=='A'){
+  }else if(input=='A' || input=='a'){
     if(position->col_index==0){
       printf("Please enter a valid movement.\n");
       return 0;
@@ -99,7 +99,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
       position->col_index--;
       return 1;
     }
-  }else if(input=='S'){
+  }else if(input=='S' || input=='s'){
     if(position->row_index==GRID_SIZE-1){
       printf("Please enter a valid movement.\n");
       return 0;
@@ -110,7 +110,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
       position->row_index++;
       return 1;
     }
-  }else if(input=='D'){
+  }else if(input=='D' || input=='d'){
     if(position->col_index==GRID_SIZE-1){
       printf("Please enter a valid movement.\n");
       return 0;
@@ -126,7 +126,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
 
 /* Player interface functions */
 
-//checks if game is over - function must be tested later
+//checks if game is over
 int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
   int win = 1;
   for(int i=0;i<GRID_SIZE && win==1;i++){
@@ -146,6 +146,7 @@ int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
 
 //displays the puzzle grid on the screen
 void show_grid(int grid[GRID_SIZE][GRID_SIZE]){
+  printf(" -----------\n");
   for(int i=0;i<GRID_SIZE;i++){
     for(int j=0;j<GRID_SIZE;j++){
       printf("|%02d", grid[i][j]);
@@ -157,7 +158,7 @@ void show_grid(int grid[GRID_SIZE][GRID_SIZE]){
 
 //shows controls to the player
 void display_instructions(){
-  printf("The objetive of this game is to line the numbers in growing order,\nfrom left to right, then from top to bottom. The only number you\nare allowed to move is the 00, swapping its position with one of its\nadjacent numbers. To move it, you must type the direction you want\nit to move, then press enter.\n\nW - up, A - left, S - down, D - right\n\n -----------\n");
+  printf("The objetive of this game is to line the numbers in growing order,\nfrom left to right, then from top to bottom. The only number you\nare allowed to move is the 00, swapping its position with one of its\nadjacent numbers. To move it, you must type the direction you want\nit to move, then press enter.\n\nW - up, A - left, S - down, D - right\n\n");
 }
 
 int main(){
