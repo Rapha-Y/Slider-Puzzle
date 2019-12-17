@@ -17,7 +17,6 @@ typedef struct {
 
 /* Puzzle setup functions */
 
-//fills the array with numbers in order
 void reset_array(number_array *array){
   for(int i=0;i<GRID_SIZE*GRID_SIZE;i++){
     array->numbers[i] = i;
@@ -25,7 +24,6 @@ void reset_array(number_array *array){
   array->size = GRID_SIZE*GRID_SIZE;
 }
 
-//moves an element of the array to the current size limit
 void pick_number(int index, number_array *array){
   int selection = array->numbers[index];
   int i;
@@ -36,7 +34,6 @@ void pick_number(int index, number_array *array){
   array->size--;
 }
 
-//randomizes the position of the numbers
 void scramble_array(number_array *array){
   srand(time(NULL));
   for(int i=0;i<GRID_SIZE*GRID_SIZE;i++){
@@ -45,7 +42,6 @@ void scramble_array(number_array *array){
   }
 }
 
-//fills the grid with elements of the array
 void start_grid(number_array array, int grid[GRID_SIZE][GRID_SIZE]){
   for(int i=0;i<GRID_SIZE;i++){
     for(int j=0;j<GRID_SIZE;j++){
@@ -54,7 +50,6 @@ void start_grid(number_array array, int grid[GRID_SIZE][GRID_SIZE]){
   }
 }
 
-//finds 00's position in the grid
 void find_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE]){
   int brake=0;
   for(int i=0;i<GRID_SIZE && brake==0;i++){
@@ -133,9 +128,17 @@ int reset_game(char confirmation){
   }
 }
 
+int select_diff(int diff){
+  if(diff>0 && diff<4){
+    return 1;
+  }else{
+    printf("Please enter a valid input.\n");
+    return 0;
+  }
+}
+
 /* Player interface functions */
 
-//checks if game is over
 int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
   int win = 1;
   for(int i=0;i<GRID_SIZE && win==1;i++){
@@ -153,7 +156,6 @@ int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
   }
 }
 
-//displays the puzzle grid on the screen
 void show_grid(int grid[GRID_SIZE][GRID_SIZE]){
   printf(" -----------\n");
   for(int i=0;i<GRID_SIZE;i++){
@@ -165,19 +167,28 @@ void show_grid(int grid[GRID_SIZE][GRID_SIZE]){
   printf(" -----------\n");
 }
 
-//shows controls to the player
 void display_instructions(){
   printf("The objetive of this game is to line the numbers in growing order,\nfrom left to right, then from top to bottom. The only number you\nare allowed to move is the 00, swapping its position with one of its\nadjacent numbers. To move it, you must type the direction you want\nit to move, then press enter.\n\nW - up, A - left, S - down, D - right\n\n");
+}
+
+void display_diff_selector(){
+  printf("Press 1 to select easy mode, 2 for normal mode or 3 for hard mode,\nthen, press Enter to confirm.\n");
 }
 
 int main(){
   number_array array;
   zero_pos position;
-  int swap_check, grid[GRID_SIZE][GRID_SIZE];
+  int diff, swap_check, grid[GRID_SIZE][GRID_SIZE];
   char input, reset;
 
   display_instructions();
   while(1){
+    display_diff_selector();
+    scanf("\n%d", &diff);
+    while(select_diff(diff)!=1){
+      scanf("\n%d", &diff);
+    }
+
     reset_array(&array);
     scramble_array(&array);
     start_grid(array, grid);
