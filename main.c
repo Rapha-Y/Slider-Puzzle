@@ -5,7 +5,7 @@
 #define GRID_SIZE 4
 
 typedef struct {
-  int numbers[GRID_SIZE*GRID_SIZE];
+  int numbers[(GRID_SIZE+1)*(GRID_SIZE+1)];
   int size;
   int zero_pos;
 } number_array;
@@ -17,11 +17,11 @@ typedef struct {
 
 /* Puzzle setup functions */
 
-void reset_array(number_array *array){
-  for(int i=0;i<GRID_SIZE*GRID_SIZE;i++){
+void reset_array(number_array *array, int diff){
+  for(int i=0;i<(GRID_SIZE+diff-2)*(GRID_SIZE+diff-2);i++){
     array->numbers[i] = i;
   }
-  array->size = GRID_SIZE*GRID_SIZE;
+  array->size = (GRID_SIZE+diff-2)*(GRID_SIZE+diff-2);
 }
 
 void pick_number(int index, number_array *array){
@@ -34,26 +34,26 @@ void pick_number(int index, number_array *array){
   array->size--;
 }
 
-void scramble_array(number_array *array){
+void scramble_array(number_array *array, int diff){
   srand(time(NULL));
-  for(int i=0;i<GRID_SIZE*GRID_SIZE;i++){
+  for(int i=0;i<(GRID_SIZE+diff-2)*(GRID_SIZE+diff-2);i++){
     int rn = rand() % array->size;
     pick_number(rn, array);
   }
 }
 
-void start_grid(number_array array, int grid[GRID_SIZE][GRID_SIZE]){
-  for(int i=0;i<GRID_SIZE;i++){
-    for(int j=0;j<GRID_SIZE;j++){
-      grid[i][j] = array.numbers[GRID_SIZE*i+j];
+void start_grid(number_array array, int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
+  for(int i=0;i<GRID_SIZE+diff-2;i++){
+    for(int j=0;j<GRID_SIZE+diff-2;j++){
+      grid[i][j] = array.numbers[(GRID_SIZE+diff-2)*i+j];
     }
   }
 }
 
-void find_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE]){
+void find_zero(zero_pos *position, int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
   int brake=0;
-  for(int i=0;i<GRID_SIZE && brake==0;i++){
-    for(int j=0;j<GRID_SIZE && brake==0;j++){
+  for(int i=0;i<GRID_SIZE+diff-2 && brake==0;i++){
+    for(int j=0;j<GRID_SIZE+diff-2 && brake==0;j++){
       if(grid[i][j]==0){
         position->row_index = i;
         position->col_index = j;
@@ -65,7 +65,7 @@ void find_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE]){
 
 /* Gameplay functions */
 
-int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
+int move_zero(zero_pos *position, int grid[GRID_SIZE+1][GRID_SIZE+1], char input, int diff){
   //for invalid letters
   if(input!='W' && input!='A' && input!='S' && input!='D' && input!='w' && input!='a' && input!='s' && input!='d'){
     printf("Please enter a valid input.\n");
@@ -95,7 +95,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
       return 1;
     }
   }else if(input=='S' || input=='s'){
-    if(position->row_index==GRID_SIZE-1){
+    if(position->row_index==(GRID_SIZE+diff-2)-1){
       printf("Please enter a valid movement.\n");
       return 0;
     }else{
@@ -106,7 +106,7 @@ int move_zero(zero_pos *position, int grid[GRID_SIZE][GRID_SIZE], char input){
       return 1;
     }
   }else if(input=='D' || input=='d'){
-    if(position->col_index==GRID_SIZE-1){
+    if(position->col_index==(GRID_SIZE+diff-2)-1){
       printf("Please enter a valid movement.\n");
       return 0;
     }else{
@@ -139,11 +139,11 @@ int select_diff(int diff){
 
 /* Player interface functions */
 
-int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
+int check_victory(int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
   int win = 1;
-  for(int i=0;i<GRID_SIZE && win==1;i++){
-    for(int j=0;j<GRID_SIZE && win==1;j++){
-      if(grid[i][j] != GRID_SIZE*i+j){
+  for(int i=0;i<GRID_SIZE+diff-2 && win==1;i++){
+    for(int j=0;j<GRID_SIZE+diff-2 && win==1;j++){
+      if(grid[i][j] != (GRID_SIZE+diff-2)*i+j){
         win = 0;
       }
     }
@@ -156,15 +156,23 @@ int check_victory(int grid[GRID_SIZE][GRID_SIZE]){
   }
 }
 
-void show_grid(int grid[GRID_SIZE][GRID_SIZE]){
-  printf(" -----------\n");
-  for(int i=0;i<GRID_SIZE;i++){
-    for(int j=0;j<GRID_SIZE;j++){
+void show_grid(int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
+  printf(" ");
+  for(int i=0;i<diff-1;i++){
+    printf("---");
+  }
+  printf("--------\n");
+  for(int i=0;i<GRID_SIZE+diff-2;i++){
+    for(int j=0;j<GRID_SIZE+diff-2;j++){
       printf("|%02d", grid[i][j]);
     }
     printf("|\n");
   }
-  printf(" -----------\n");
+  printf(" ");
+  for(int i=0;i<diff-1;i++){
+    printf("---");
+  }
+  printf("--------\n");
 }
 
 void display_instructions(){
@@ -178,7 +186,7 @@ void display_diff_selector(){
 int main(){
   number_array array;
   zero_pos position;
-  int diff, swap_check, grid[GRID_SIZE][GRID_SIZE];
+  int diff, swap_check, grid[GRID_SIZE+1][GRID_SIZE+1];
   char input, reset;
 
   display_instructions();
@@ -189,17 +197,17 @@ int main(){
       scanf("\n%d", &diff);
     }
 
-    reset_array(&array);
-    scramble_array(&array);
-    start_grid(array, grid);
-    find_zero(&position, grid);
+    reset_array(&array, diff);
+    scramble_array(&array, diff);
+    start_grid(array, grid, diff);
+    find_zero(&position, grid, diff);
 
-    while(check_victory(grid)!=1){
-      show_grid(grid);
+    while(check_victory(grid, diff)!=1){
+      show_grid(grid, diff);
       swap_check=0;
       while(swap_check==0){
         scanf("\n%c", &input);
-        swap_check = move_zero(&position, grid, input);
+        swap_check = move_zero(&position, grid, input, diff);
       }
     }
 
