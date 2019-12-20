@@ -150,7 +150,7 @@ int select_diff(int diff){
 
 /* Player interface functions */
 
-int check_victory(int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
+int check_victory(int grid[GRID_SIZE+1][GRID_SIZE+1], int diff, int *score){
   int win = 1;
   for(int i=0;i<GRID_SIZE+diff-2 && win==1;i++){
     for(int j=0;j<GRID_SIZE+diff-2 && win==1;j++){
@@ -161,6 +161,7 @@ int check_victory(int grid[GRID_SIZE+1][GRID_SIZE+1], int diff){
   }
   if(win==1){
     printf("Congratulations! You won!\n");
+    (*score)++;
     return 1;
   }else{
     return 0;
@@ -194,14 +195,25 @@ void display_diff_selector(){
   printf("Press 1 to select easy mode, 2 for normal mode or 3 for hard mode,\nthen, press Enter to confirm.\n");
 }
 
+void display_score(int score){
+  if(score>0){
+    if(score==1){
+      printf("You have won 1 game so far.\n", score);
+    }else{
+      printf("You have won %d games so far.\n", score);
+    }
+  }
+}
+
 int main(){
   number_array array;
   zero_pos position;
-  int diff, swap_check = 0, grid[GRID_SIZE+1][GRID_SIZE+1];
+  int score=1, diff, swap_check = 0, grid[GRID_SIZE+1][GRID_SIZE+1];
   char input, reset;
 
   display_instructions();
   while(1){
+    display_score(score);
     display_diff_selector();
     scanf("\n%d", &diff);
     while(select_diff(diff)!=1){
@@ -213,7 +225,7 @@ int main(){
     start_grid(array, grid, diff);
     find_zero(&position, grid, diff);
 
-    while(check_victory(grid, diff)!=1 && swap_check!=2){
+    while(check_victory(grid, diff, &score)!=1 && swap_check!=2){
       show_grid(grid, diff);
       swap_check = 0;
       while(swap_check==0){
