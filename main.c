@@ -66,8 +66,19 @@ void find_zero(zero_pos *position, int grid[GRID_SIZE+1][GRID_SIZE+1], int diff)
 /* Gameplay functions */
 
 int move_zero(zero_pos *position, int grid[GRID_SIZE+1][GRID_SIZE+1], char input, int diff){
+  //for forced reset
+  if(input=='R' || input=='r'){
+    printf("Are you sure you want to start a new game? You will lose this game's progress.\nPress Y for yes or any letter for no.\n");
+    char confirmation;
+    scanf("\n%c", &confirmation);
+    if(confirmation=='Y' || confirmation=='y'){
+      return 2;
+    }else{
+      printf("Your game has been resumed. Please enter your next movement.\n");
+      return 0;
+    }
   //for invalid letters
-  if(input!='W' && input!='A' && input!='S' && input!='D' && input!='w' && input!='a' && input!='s' && input!='d'){
+  }else if(input!='W' && input!='A' && input!='S' && input!='D' && input!='w' && input!='a' && input!='s' && input!='d'){
     printf("Please enter a valid input.\n");
     return 0;
   }else if(input=='W' || input=='w'){
@@ -186,7 +197,7 @@ void display_diff_selector(){
 int main(){
   number_array array;
   zero_pos position;
-  int diff, swap_check, grid[GRID_SIZE+1][GRID_SIZE+1];
+  int diff, swap_check = 0, grid[GRID_SIZE+1][GRID_SIZE+1];
   char input, reset;
 
   display_instructions();
@@ -202,16 +213,21 @@ int main(){
     start_grid(array, grid, diff);
     find_zero(&position, grid, diff);
 
-    while(check_victory(grid, diff)!=1){
+    while(check_victory(grid, diff)!=1 && swap_check!=2){
       show_grid(grid, diff);
-      swap_check=0;
+      swap_check = 0;
       while(swap_check==0){
         scanf("\n%c", &input);
         swap_check = move_zero(&position, grid, input, diff);
       }
     }
 
-    reset = 'F';
+    if(swap_check!=2){
+      reset = 'F';
+    }else{
+      swap_check = 0;
+      reset = 'R';
+    }
     while(reset_game(reset)!=1){
       scanf("\n%c", &reset);
     }
